@@ -33,7 +33,7 @@ X2[:, 1] = R*np.sin(Theta2) + C2[1] + noise*np.random.rand(n)
 
 Y = np.zeros(2*n)
 Y[:n] = 0
-Y[n+1:] = 1
+Y[n:] = 1
 Y = Y.astype(int)
 
 X = np.concatenate((X1, X2))
