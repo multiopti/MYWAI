@@ -10,7 +10,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import KFold
 import matplotlib.pyplot as plt
 
-n =10 #double of size of the dataset
+n =10 #half size of the dataset
 np.random.seed(0)
 
 # Generate n points between -pi/2 and pi/2
