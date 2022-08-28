@@ -1,0 +1,589 @@
+[
+    {
+        "id": "3df0496c1391a7a8",
+        "type": "tab",
+        "label": "Changepoint detection",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "484bde7446734685",
+        "type": "inject",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "0.1",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 90,
+        "wires": [
+            [
+                "186945daa54ddce7",
+                "e9e8ac7a09420669",
+                "266f6eede3c10b88"
+            ]
+        ]
+    },
+    {
+        "id": "040a0ecb0eb7ddf6",
+        "type": "debug",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "0289b2e2bf48b9fe",
+        "type": "inject",
+        "z": "3df0496c1391a7a8",
+        "name": "healthy",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "",
+        "topic": "",
+        "payload": "Healthy",
+        "payloadType": "str",
+        "x": 210,
+        "y": 330,
+        "wires": [
+            [
+                "f2e0bc7e443ee905",
+                "913868e80caf8c22"
+            ]
+        ]
+    },
+    {
+        "id": "924c2c321056ec9d",
+        "type": "inject",
+        "z": "3df0496c1391a7a8",
+        "name": "broken",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "",
+        "topic": "",
+        "payload": "Broken",
+        "payloadType": "str",
+        "x": 210,
+        "y": 380,
+        "wires": [
+            [
+                "f2e0bc7e443ee905",
+                "913868e80caf8c22"
+            ]
+        ]
+    },
+    {
+        "id": "f2e0bc7e443ee905",
+        "type": "function",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "func": "var mini = context.flow.get('mini')||0.00001;\nvar maxi = context.flow.get('maxi')||3.4641;\n\nif (msg.payload == 'Healthy')\n{\ncontext.flow.set('mini',0.00001);\ncontext.flow.set('maxi',3.4641);\n}\n\nif (msg.payload == 'Broken')\n{\ncontext.flow.set('mini',0.14);\ncontext.flow.set('maxi',3.6005);\n}\n\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 423,
+        "y": 357.5,
+        "wires": [
+            [
+                "013807fad6b63683"
+            ]
+        ]
+    },
+    {
+        "id": "013807fad6b63683",
+        "type": "debug",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "false",
+        "x": 670,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "446959d5c37c439c",
+        "type": "function",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "func": "var mini = context.flow.get('mini')||0.0001;\nvar maxi = context.flow.get('maxi')||3.4641;\n\nvar x = msg.payload;\n\ny = (maxi - mini)*(x + 1)/2 + mini;\n\nreturn {payload: y};",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 180,
+        "wires": [
+            [
+                "c4720a5771331736",
+                "4991e3232f26f892",
+                "040a0ecb0eb7ddf6"
+            ]
+        ]
+    },
+    {
+        "id": "4991e3232f26f892",
+        "type": "ui_chart",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "group": "2e9a06bbbc27dc57",
+        "order": 0,
+        "width": "0",
+        "height": "0",
+        "label": "chart",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "step",
+        "nodata": "",
+        "dot": true,
+        "ymin": "0",
+        "ymax": "4",
+        "removeOlder": "1",
+        "removeOlderPoints": "300",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 790,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c4720a5771331736",
+        "type": "function",
+        "z": "3df0496c1391a7a8",
+        "name": "Statistics",
+        "func": "var x1=flow.get('x1') || 0;\nvar x2=flow.get('x2') || 0;\nvar PSA=flow.get('PSA') || 0;\nvar variance=flow.get('Var') || 0;\nvar Nsum = flow.get('Nsum') || 0;\nvar Lmean = flow.get('Lmean') || 0;\nvar Lvar = flow.get('Lvar') || 0;\nvar Lts = flow.get('Lts') || 0;\nvar N=flow.get('N') || 400;\nvar counter=flow.get('counter') || 1;\nvar change=flow.get('change') || 'Healthy';\nvar Reset = flow.get('reset_alarm') || false;\nvar mean;\n\nvar real_mean = 1.7321\nvar real_std = 0.707\n\nx2 = x1;\nx1 = msg.payload;\n\nif (counter <= N)\n{\n Nsum = Nsum + x1;\n PSA = PSA + (x1-real_mean)*(x1-real_mean);\n variance = PSA/(N-1);\n}\nelse\n{\n  counter = 0;\n  PSA =0;\n  Lts = Math.pow(N,0.5)*(real_mean - Nsum/N)/Math.pow(variance,0.5);\n  if ( Math.abs(Lts) > 2.58 )\n    change = 'Broken!';\n \n  flow.set(\"Lvar\", variance);\n  //node.warn([\"Lvar=\", Lvar]);\n  flow.set(\"Lmean\", Nsum/N);\n  flow.set(\"change\", change);\n  flow.set(\"Lts\", Lts);\n  Nsum = 0;\n  variance = 0;\n}\n\ncounter = counter + 1;\n\nflow.set(\"x1\", x1);\nflow.set(\"x2\", x2);\nflow.set(\"PSA\", PSA);\nflow.set(\"Var\", variance);\nflow.set(\"counter\", counter);\nflow.set(\"Nsum\", Nsum);\nmean = Nsum/N;\n\nif (Reset == true)\n{\n    change = 'Healthy';\n    Reset = false;\n    flow.set(\"change\", change);\n    flow.set(\"reset_alarm\", Reset);\n    \n}\n\nreturn [{payload: mean}, {payload: variance}, {payload: Lts}, {payload: change} ];\n",
+        "outputs": 4,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 330,
+        "wires": [
+            [
+                "1ea98915caa88dd8",
+                "e4a018ae06b97ab4"
+            ],
+            [
+                "37f7633ae4cb04b6",
+                "f566b94b27baf75f"
+            ],
+            [
+                "af7a3d68e544c144"
+            ],
+            [
+                "d2568d4f6fabb60e"
+            ]
+        ]
+    },
+    {
+        "id": "1ea98915caa88dd8",
+        "type": "debug",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1010,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "37f7633ae4cb04b6",
+        "type": "debug",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1070,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "e4a018ae06b97ab4",
+        "type": "ui_text",
+        "z": "3df0496c1391a7a8",
+        "group": "2e9a06bbbc27dc57",
+        "order": 22,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Mean = ",
+        "format": "{{msg.payload | number: 3}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1060,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "f566b94b27baf75f",
+        "type": "ui_text",
+        "z": "3df0496c1391a7a8",
+        "group": "2e9a06bbbc27dc57",
+        "order": 22,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Variance  = ",
+        "format": "{{msg.payload | number: 3}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1110,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "5435842dbff11cdb",
+        "type": "ui_text",
+        "z": "3df0496c1391a7a8",
+        "group": "2e9a06bbbc27dc57",
+        "order": 22,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Last Mean = ",
+        "format": "{{msg.payload | number: 3}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 490,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "e9e8ac7a09420669",
+        "type": "change",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Lmean",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 320,
+        "y": 210,
+        "wires": [
+            [
+                "5435842dbff11cdb"
+            ]
+        ]
+    },
+    {
+        "id": "3078ee14e8b421d5",
+        "type": "ui_text",
+        "z": "3df0496c1391a7a8",
+        "group": "2e9a06bbbc27dc57",
+        "order": 22,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Last Var = ",
+        "format": "{{msg.payload | number: 3}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 480,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "266f6eede3c10b88",
+        "type": "change",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Lvar",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 260,
+        "y": 270,
+        "wires": [
+            [
+                "3078ee14e8b421d5"
+            ]
+        ]
+    },
+    {
+        "id": "af7a3d68e544c144",
+        "type": "debug",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1010,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "3130c647622f51a1",
+        "type": "ui_button",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "group": "c712d897f9bf9105",
+        "order": 22,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "RESET",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 240,
+        "y": 540,
+        "wires": [
+            [
+                "b2a462cc06abc95a"
+            ]
+        ]
+    },
+    {
+        "id": "b2a462cc06abc95a",
+        "type": "change",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "reset_alarm",
+                "pt": "flow",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 460,
+        "y": 540,
+        "wires": [
+            [
+                "dd040a908ab55d14"
+            ]
+        ]
+    },
+    {
+        "id": "dd040a908ab55d14",
+        "type": "debug",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "186945daa54ddce7",
+        "type": "simplex",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "x": 330,
+        "y": 120,
+        "wires": [
+            [
+                "446959d5c37c439c"
+            ]
+        ]
+    },
+    {
+        "id": "d2568d4f6fabb60e",
+        "type": "ui_text",
+        "z": "3df0496c1391a7a8",
+        "group": "c712d897f9bf9105",
+        "order": 2,
+        "width": "0",
+        "height": "0",
+        "name": "",
+        "label": "Detected condition:",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1050,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "913868e80caf8c22",
+        "type": "ui_switch",
+        "z": "3df0496c1391a7a8",
+        "name": "",
+        "label": "Healthy / Broken",
+        "tooltip": "",
+        "group": "0cf2c870bc2bd0e1",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "topic",
+        "topicType": "msg",
+        "style": "",
+        "onvalue": "Broken",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "Healthy",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 230,
+        "y": 440,
+        "wires": [
+            [
+                "f2e0bc7e443ee905"
+            ]
+        ]
+    },
+    {
+        "id": "2e9a06bbbc27dc57",
+        "type": "ui_group",
+        "name": "Data",
+        "tab": "1c2c5fa98e0b310e",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "c712d897f9bf9105",
+        "type": "ui_group",
+        "name": "Change",
+        "tab": "1c2c5fa98e0b310e",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "0cf2c870bc2bd0e1",
+        "type": "ui_group",
+        "name": "Control",
+        "tab": "1c2c5fa98e0b310e",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "1c2c5fa98e0b310e",
+        "type": "ui_tab",
+        "name": "Demo",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
