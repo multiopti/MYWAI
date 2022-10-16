@@ -117,6 +117,6 @@ print(score_table)
 
 
 
-with open('C:\\Users\\GustavoSanchez\\score_table', 'w') as f:
+with open('score_table', 'w') as f:
     write = csv.writer(f)    
     write.writerows(score_table)
