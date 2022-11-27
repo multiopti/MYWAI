@@ -220,7 +220,8 @@ def make_patterns(
     noise,
     winlen,
     nsample,
-    sclass):
+    sclass,
+    init_ind):
     
     X = np.zeros([nsample,winlen])
     S = np.zeros(nsample*winlen)
@@ -234,7 +235,8 @@ def make_patterns(
             q[i] = S[tv]
         X[k,:] = q
         Y[k] = sclass
-        mlink.append((k,k+1))
+        if k < winlen - 1 :
+            mlink.append((init_ind + k,init_ind + k+1))
 
     return X, Y, S,mlink
 
@@ -248,6 +250,7 @@ X1, Y1, S1, mlink1 = make_patterns(
     0.01,
     winlen,
     100,
+    0,
     0)
 
 X2, Y2, S2, mlink2 = make_patterns(
@@ -257,20 +260,21 @@ X2, Y2, S2, mlink2 = make_patterns(
     0.01,
     winlen,
     100,
-    1)
+    1,
+    100)
 
 S = np.hstack([S1,S2])
 t = np.arange(len(S))
 X = np.vstack([X1,X2])
 
 
-must_link = []
+must_link = mlink1 + mlink2
 
 cannot_link = []
-for k in range(0,100):
-     cannot_link.append((len(X)-1,k))
-for k in range(101,len(X)):
-     cannot_link.append((0,k))
+# for k in range(0,100):
+#      cannot_link.append((len(X)-1,k))
+# for k in range(101,len(X)):
+#      cannot_link.append((0,k))
 clusters, centers = cop_kmeans(dataset=X, k=2, ml=must_link,cl=cannot_link)
 
 plt.figure
