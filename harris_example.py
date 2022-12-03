@@ -23,7 +23,7 @@ Ft = len(t)
 
 # Closed-loop simulation
 Gp = minreal(tf(B, A,sampling_t))
-Gc = tf([0.25],[1,0],sampling_t)
+Gc = tf([0.1],[1],sampling_t)
 Gycl = minreal(Gp/(1+Gp*Gc))
 
 
@@ -41,7 +41,7 @@ ydata = signal.detrend(ysim)
 order_AR = 4
 order_MA = 0
 arma_mod = ARIMA(ydata, order=(order_AR, 0, order_MA))
-arma_res = arma_mod.fit()
+# arma_res = arma_mod.fit()
 #print(arma_res.summary())
 
 AR = arma_mod._polynomial_ar
