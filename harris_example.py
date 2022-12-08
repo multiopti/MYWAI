@@ -41,8 +41,8 @@ ydata = signal.detrend(ysim)
 order_AR = 4
 order_MA = 0
 arma_mod = ARIMA(ydata, order=(order_AR, 0, order_MA))
-# arma_res = arma_mod.fit()
-#print(arma_res.summary())
+arma_res = arma_mod.fit()
+print(arma_res.summary())
 
 AR = arma_mod._polynomial_ar
 MA = arma_mod._polynomial_ma
