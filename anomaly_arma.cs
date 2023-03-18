@@ -7,7 +7,6 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UnscentedKalmanFilter;
 using ZedGraph;
 
 public class ARMA
