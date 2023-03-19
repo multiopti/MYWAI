@@ -1,4 +1,4 @@
-﻿using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using System;
 using System.Collections.Generic;
@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+//using UnscentedKalmanFilter;
 using ZedGraph;
 
 public class ARMA
@@ -24,7 +25,7 @@ public class ARMA
         _theta = Vector<double>.Build.Dense(q);
     }
 
-    public void Fit(Vector<double> data)
+    public void Fit(Vector<double> data, double lambda = 0.01)
     {
         int n = data.Count;
         Matrix<double> X = Matrix<double>.Build.Dense(n - _p, _p + _q);
@@ -45,7 +46,8 @@ public class ARMA
 
         var xt = X.Transpose();
         var xtx = xt * X;
-        var xtxi = xtx.Inverse();
+        var xtxr = xtx + lambda * Matrix<double>.Build.DenseIdentity(_p + _q);
+        var xtxi = xtxr.Inverse();
         var xty = xt * y;
         var b = xtxi * xty;
 
@@ -79,21 +81,27 @@ namespace Example
     {
         static void Main(string[] args)
             {
-                double[] data = new double[200]; // Define the data array.
+                double[] data = new double[400]; // Define the data array.
+                double decayRate = 0.01;     // Decay rate of the exponential attenuation
 
-                for (int k = 0; k < 200; k++)
+            double sumacc = 2; 
+            for (int k = 0; k < 400; k++)
                 {
-                    var measurement = Math.Sin(k * 3.14 * 5 / 180);
-                    if (k > 90 && k < 100) // if k is greater than 50 and less than 60
-                    {
-                        measurement += -0.5; // add 0.5 to measurement
-                    }
+                    Random random = new Random();
+                    double randomNumber = random.NextDouble();
+                    //var measurement = Math.Sin(k * 3.14 * 5 / 180) * Math.Exp(-decayRate * k) + randomNumber;
+                    sumacc = -0.995*sumacc + randomNumber;
+                    var measurement = sumacc;
+                    if (k > 290 && k < 300) // if k is greater than 50 and less than 60
+                        {
+                            measurement += -0.5; // add 0.5 to measurement
+                        }
                     data[k] = measurement;
                 }
 
-                int p = 3; // AR order
-                int q = 1; // MA order
-                int n = 75; // Use data up to k = 50 to fit the model
+                int p = 4; // AR order
+                int q = 2; // MA order
+                int n = 275; // Use data up to k = 50 to fit the model
 
                 // Extract the data up to k = 50.
                 double[] dataToFit = new double[n];
@@ -105,31 +113,33 @@ namespace Example
                 Vector<double> input = Vector<double>.Build.DenseOfArray(dataToFit);
 
                 ARMA model = new ARMA(p, q);
-                model.Fit(input);
+                double lambda = 0.1;
+                model.Fit(input,lambda);
 
                 Console.WriteLine("AR coefficients: " + model._phi.ToString());
                 Console.WriteLine("MA coefficients: " + model._theta.ToString());
-
+                Console.ReadLine();
 
                 GraphPane myPane = new GraphPane(new RectangleF(0, 0, 3200, 2400), "Time series", "number", "measurement");
                 PointPairList measurementsPairs = new PointPairList();
                 PointPairList statesPairs = new PointPairList();
-                for (int i = 75; i < 200; i++)
+                for (int i = 10; i < 400; i++)
                 {
                     measurementsPairs.Add(i, data[i]);
                 }
-                for (int i = 75; i < 200; i++)
+                for (int i = 10; i < 400; i++)
                 {
                     double[] selectedData = new double[11];
                     for (int k = i - 10; k <= i; k++)
                     {
-                        selectedData[k - i + 10] = data[k];
+                        selectedData[k - i + 10] = -data[k];
                     }
                     Vector<double> input2 = Vector<double>.Build.DenseOfArray(selectedData);
-                    statesPairs.Add(i, 2*(data[i] + model.PredictNext(input2)));
+                    double pred_val = model.PredictNext(input2);
+                    statesPairs.Add(i, Math.Abs(data[i] - pred_val));
                 }
             
-                myPane.AddCurve("measurement", measurementsPairs, Color.Red, SymbolType.Circle);
+                //myPane.AddCurve("measurement", measurementsPairs, Color.Red, SymbolType.Circle);
                 myPane.AddCurve("prediction error", statesPairs, Color.Green, SymbolType.XCross);
                 Bitmap bm = new Bitmap(200, 200);
                 Graphics g = Graphics.FromImage(bm);
