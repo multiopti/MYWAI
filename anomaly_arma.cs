@@ -67,7 +67,7 @@ public class ARMA
 
         for (int i = 1; i <= _q; i++)
         {
-            prediction += _theta[i - 1] * (data[n - i] - prediction);
+            prediction -= _theta[i - 1] * (data[n - i] - prediction);
         }
 
         return prediction;
@@ -136,7 +136,7 @@ namespace Example
                     }
                     Vector<double> input2 = Vector<double>.Build.DenseOfArray(selectedData);
                     double pred_val = model.PredictNext(input2);
-                    statesPairs.Add(i, data[i] + pred_val);
+                    statesPairs.Add(i, data[i] - pred_val);
                     //statesPairs.Add(i,pred_val);
             }
             
