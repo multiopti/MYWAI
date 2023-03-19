@@ -84,23 +84,23 @@ namespace Example
                 double[] data = new double[400]; // Define the data array.
                 double decayRate = 0.01;     // Decay rate of the exponential attenuation
 
-            double sumacc = 2; 
+            double sumacc = 2;
+            Random random = new Random();
             for (int k = 0; k < 400; k++)
-                {
-                    Random random = new Random();
-                    double randomNumber = random.NextDouble();
+                {            
+                    double randomNumber = 0.1*random.NextDouble();
                     //var measurement = Math.Sin(k * 3.14 * 5 / 180) * Math.Exp(-decayRate * k) + randomNumber;
                     sumacc = -0.995*sumacc + randomNumber;
-                    var measurement = sumacc;
+                    data[k] = sumacc;
                     if (k > 290 && k < 300) // if k is greater than 50 and less than 60
                         {
-                            measurement += -0.5; // add 0.5 to measurement
+                            data[k] += -0.5; // add 0.5 to measurement
                         }
-                    data[k] = measurement;
+                    
                 }
 
-                int p = 4; // AR order
-                int q = 2; // MA order
+                int p = 1; // AR order
+                int q = 1; // MA order
                 int n = 275; // Use data up to k = 50 to fit the model
 
                 // Extract the data up to k = 50.
@@ -132,14 +132,15 @@ namespace Example
                     double[] selectedData = new double[11];
                     for (int k = i - 10; k <= i; k++)
                     {
-                        selectedData[k - i + 10] = -data[k];
+                        selectedData[k - i + 10] = data[k];
                     }
                     Vector<double> input2 = Vector<double>.Build.DenseOfArray(selectedData);
                     double pred_val = model.PredictNext(input2);
-                    statesPairs.Add(i, Math.Abs(data[i] - pred_val));
-                }
+                    statesPairs.Add(i, data[i] + pred_val);
+                    //statesPairs.Add(i,pred_val);
+            }
             
-                //myPane.AddCurve("measurement", measurementsPairs, Color.Red, SymbolType.Circle);
+                myPane.AddCurve("measurement", measurementsPairs, Color.Red, SymbolType.Circle);
                 myPane.AddCurve("prediction error", statesPairs, Color.Green, SymbolType.XCross);
                 Bitmap bm = new Bitmap(200, 200);
                 Graphics g = Graphics.FromImage(bm);
@@ -149,3 +150,4 @@ namespace Example
         }
     }
 }
+
